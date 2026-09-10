@@ -1,7 +1,32 @@
 // ========================================
 // WINNE ACCOUNTING
-// JAVASCRIPT
+// JAVASCRIPT + FIREBASE FIRESTORE
 // ========================================
+
+
+// ========================================
+// FIREBASE CONFIGURATION
+// ========================================
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDBPjfPTb5mY0oG_Th2_vy3OBsX_5z21N8",
+    authDomain: "winne-accounting.firebaseapp.com",
+    projectId: "winne-accounting",
+    storageBucket: "winne-accounting.firebasestorage.app",
+    messagingSenderId: "979976444232",
+    appId: "1:979976444232:web:f4099715d4c0b4493f3b7d"
+};
+
+
+// Initialize Firebase
+
+firebase.initializeApp(firebaseConfig);
+
+
+// Initialize Firestore
+
+const db =
+    firebase.firestore();
 
 
 
@@ -12,20 +37,28 @@
 const menuButton =
     document.getElementById("menuButton");
 
+
 const navLinks =
     document.getElementById("navLinks");
 
 
-menuButton.addEventListener(
-    "click",
-    function () {
+if (
+    menuButton &&
+    navLinks
+) {
 
-        navLinks
-            .classList
-            .toggle("active");
+    menuButton.addEventListener(
+        "click",
+        function () {
 
-    }
-);
+            navLinks
+                .classList
+                .toggle("active");
+
+        }
+    );
+
+}
 
 
 // Tutup navbar ketika menu diklik
@@ -42,9 +75,15 @@ document
                 "click",
                 function () {
 
-                    navLinks
-                        .classList
-                        .remove("active");
+                    if (
+                        navLinks
+                    ) {
+
+                        navLinks
+                            .classList
+                            .remove("active");
+
+                    }
 
                 }
             );
@@ -69,22 +108,35 @@ function selectPackage(
         );
 
 
-    packageInput.value =
-        packageName;
+    if (
+        packageInput
+    ) {
+
+        packageInput.value =
+            packageName;
+
+    }
 
 
-    document
-        .getElementById(
+    const contactSection =
+        document.getElementById(
             "kontak"
-        )
-        .scrollIntoView(
-            {
-
-                behavior:
-                    "smooth"
-
-            }
         );
+
+
+    if (
+        contactSection
+    ) {
+
+        contactSection
+            .scrollIntoView(
+                {
+                    behavior:
+                        "smooth"
+                }
+            );
+
+    }
 
 }
 
@@ -96,23 +148,44 @@ function selectPackage(
 
 function calculatePrice() {
 
+    const serviceElement =
+        document.getElementById(
+            "service"
+        );
+
+
+    const transactionElement =
+        document.getElementById(
+            "transactions"
+        );
+
+
+    const resultElement =
+        document.getElementById(
+            "priceResult"
+        );
+
+
+    if (
+        !serviceElement ||
+        !transactionElement ||
+        !resultElement
+    ) {
+
+        return;
+
+    }
+
+
     const service =
         Number(
-            document
-                .getElementById(
-                    "service"
-                )
-                .value
+            serviceElement.value
         );
 
 
     const transactions =
         Number(
-            document
-                .getElementById(
-                    "transactions"
-                )
-                .value
+            transactionElement.value
         );
 
 
@@ -135,8 +208,9 @@ function calculatePrice() {
 
     // Harga awal mencakup
     // maksimal 50 transaksi.
-    // Setiap tambahan maksimal
-    // 50 transaksi = Rp50.000
+    //
+    // Setiap tambahan 50 transaksi
+    // dikenakan Rp50.000.
 
     if (
         transactions > 50
@@ -164,11 +238,7 @@ function calculatePrice() {
         additionalCost;
 
 
-    document
-        .getElementById(
-            "priceResult"
-        )
-        .innerText =
+    resultElement.innerText =
         formatRupiah(
             totalPrice
         );
@@ -177,7 +247,9 @@ function calculatePrice() {
 
 
 
+// ========================================
 // FORMAT RUPIAH
+// ========================================
 
 function formatRupiah(
     number
@@ -219,37 +291,61 @@ function sendMessage(
     event.preventDefault();
 
 
+    const nameElement =
+        document.getElementById(
+            "name"
+        );
+
+
+    const emailElement =
+        document.getElementById(
+            "email"
+        );
+
+
+    const packageElement =
+        document.getElementById(
+            "package"
+        );
+
+
+    const messageElement =
+        document.getElementById(
+            "message"
+        );
+
+
+    if (
+        !nameElement ||
+        !emailElement ||
+        !messageElement
+    ) {
+
+        return;
+
+    }
+
+
     const name =
-        document
-            .getElementById(
-                "name"
-            )
+        nameElement
             .value
             .trim();
 
 
     const email =
-        document
-            .getElementById(
-                "email"
-            )
+        emailElement
             .value
             .trim();
 
 
     const selectedPackage =
-        document
-            .getElementById(
-                "package"
-            )
-            .value;
+        packageElement
+            ? packageElement.value
+            : "";
 
 
     const message =
-        document
-            .getElementById(
-                "message"
-            )
+        messageElement
             .value
             .trim();
 
@@ -300,11 +396,19 @@ function sendMessage(
     );
 
 
-    document
-        .getElementById(
+    const contactForm =
+        document.getElementById(
             "contactForm"
-        )
-        .reset();
+        );
+
+
+    if (
+        contactForm
+    ) {
+
+        contactForm.reset();
+
+    }
 
 }
 
@@ -461,10 +565,15 @@ skillBars
 
 // ========================================
 // REVIEW WEBSITE
+// FIREBASE FIRESTORE
 // ========================================
 
 let selectedRating =
     0;
+
+
+let publicReviews =
+    [];
 
 
 const stars =
@@ -474,7 +583,9 @@ const stars =
 
 
 
-// PILIH RATING
+// ========================================
+// PILIH RATING BINTANG
+// ========================================
 
 stars.forEach(
 
@@ -497,12 +608,20 @@ stars.forEach(
                     );
 
 
-                document
-                    .getElementById(
+                const reviewRating =
+                    document.getElementById(
                         "reviewRating"
-                    )
-                    .value =
-                    selectedRating;
+                    );
+
+
+                if (
+                    reviewRating
+                ) {
+
+                    reviewRating.value =
+                        selectedRating;
+
+                }
 
 
                 updateStars();
@@ -517,7 +636,9 @@ stars.forEach(
 
 
 
+// ========================================
 // WARNA BINTANG
+// ========================================
 
 function updateStars() {
 
@@ -547,7 +668,9 @@ function updateStars() {
                         "active"
                     );
 
-            } else {
+            }
+
+            else {
 
                 star
                     .classList
@@ -566,57 +689,75 @@ function updateStars() {
 
 
 // ========================================
-// LOCAL STORAGE REVIEW
+// SUBMIT REVIEW KE FIREBASE
 // ========================================
 
-let reviews =
-    JSON.parse(
-
-        localStorage
-            .getItem(
-                "winneAccountingReviews"
-            )
-
-    ) || [];
-
-
-
-// ========================================
-// SUBMIT REVIEW
-// ========================================
-
-document
-    .getElementById(
+const reviewForm =
+    document.getElementById(
         "reviewForm"
-    )
-    .addEventListener(
+    );
+
+
+if (
+    reviewForm
+) {
+
+    reviewForm.addEventListener(
 
         "submit",
 
-        function (
+        async function (
             event
         ) {
 
-            event
-                .preventDefault();
+            event.preventDefault();
+
+
+            const nameElement =
+                document.getElementById(
+                    "reviewName"
+                );
+
+
+            const messageElement =
+                document.getElementById(
+                    "reviewMessage"
+                );
+
+
+            if (
+                !nameElement ||
+                !messageElement
+            ) {
+
+                return;
+
+            }
 
 
             const name =
-                document
-                    .getElementById(
-                        "reviewName"
-                    )
+                nameElement
                     .value
                     .trim();
 
 
             const message =
-                document
-                    .getElementById(
-                        "reviewMessage"
-                    )
+                messageElement
                     .value
                     .trim();
+
+
+            if (
+                name === ""
+            ) {
+
+                alert(
+                    "Silakan masukkan nama Anda."
+                );
+
+                return;
+
+            }
 
 
             if (
@@ -632,96 +773,292 @@ document
             }
 
 
-            const review = {
+            if (
+                message === ""
+            ) {
 
-                name:
-                    name,
+                alert(
+                    "Silakan tuliskan ulasan terlebih dahulu."
+                );
 
-                rating:
-                    selectedRating,
+                return;
 
-                message:
-                    message,
-
-                date:
-                    new Date()
-                        .toLocaleDateString(
-
-                            "id-ID",
-
-                            {
-
-                                day:
-                                    "numeric",
-
-                                month:
-                                    "long",
-
-                                year:
-                                    "numeric"
-
-                            }
-
-                        )
-
-            };
+            }
 
 
-            reviews.unshift(
-                review
-            );
+            if (
+                name.length > 50
+            ) {
+
+                alert(
+                    "Nama maksimal 50 karakter."
+                );
+
+                return;
+
+            }
 
 
-            localStorage
-                .setItem(
+            if (
+                message.length > 500
+            ) {
 
-                    "winneAccountingReviews",
+                alert(
+                    "Ulasan maksimal 500 karakter."
+                );
 
-                    JSON.stringify(
-                        reviews
+                return;
+
+            }
+
+
+            const submitButton =
+                reviewForm
+                    .querySelector(
+                        'button[type="submit"]'
+                    );
+
+
+            const originalButtonText =
+                submitButton
+                    ? submitButton.innerHTML
+                    : "";
+
+
+            try {
+
+                if (
+                    submitButton
+                ) {
+
+                    submitButton.disabled =
+                        true;
+
+
+                    submitButton.innerHTML =
+                        "Mengirim ulasan...";
+
+                }
+
+
+                // SIMPAN REVIEW KE FIRESTORE
+
+                await db
+                    .collection(
+                        "reviews"
                     )
+                    .add(
+                        {
 
+                            name:
+                                name,
+
+                            rating:
+                                selectedRating,
+
+                            message:
+                                message,
+
+                            createdAt:
+                                firebase
+                                    .firestore
+                                    .FieldValue
+                                    .serverTimestamp()
+
+                        }
+                    );
+
+
+                // RESET FORM
+
+                reviewForm.reset();
+
+
+                selectedRating =
+                    0;
+
+
+                updateStars();
+
+
+                alert(
+                    "Terima kasih! 💜 Ulasan Anda berhasil dipublikasikan."
+                );
+
+            }
+
+            catch (
+                error
+            ) {
+
+                console.error(
+                    "Gagal mengirim review:",
+                    error
                 );
 
 
-            displayReviews();
+                alert(
+                    "Ulasan gagal dikirim. Silakan coba lagi."
+                );
+
+            }
+
+            finally {
+
+                if (
+                    submitButton
+                ) {
+
+                    submitButton.disabled =
+                        false;
 
 
-            document
-                .getElementById(
-                    "reviewForm"
-                )
-                .reset();
+                    submitButton.innerHTML =
+                        originalButtonText;
 
+                }
 
-            selectedRating =
-                0;
-
-
-            updateStars();
-
-
-            alert(
-                "Terima kasih! 💜 Ulasan Anda berhasil dikirim."
-            );
+            }
 
         }
 
     );
 
+}
+
 
 
 // ========================================
-// DISPLAY REVIEW
+// AMBIL REVIEW PUBLIK SECARA REAL-TIME
+// ========================================
+
+function listenToReviews() {
+
+    db
+        .collection(
+            "reviews"
+        )
+        .orderBy(
+            "createdAt",
+            "desc"
+        )
+        .limit(
+            50
+        )
+        .onSnapshot(
+
+            function (
+                snapshot
+            ) {
+
+                publicReviews =
+                    [];
+
+
+                snapshot.forEach(
+
+                    function (
+                        document
+                    ) {
+
+                        const data =
+                            document.data();
+
+
+                        publicReviews.push(
+                            {
+
+                                id:
+                                    document.id,
+
+                                name:
+                                    data.name,
+
+                                rating:
+                                    data.rating,
+
+                                message:
+                                    data.message,
+
+                                createdAt:
+                                    data.createdAt
+
+                            }
+                        );
+
+                    }
+
+                );
+
+
+                displayReviews();
+
+
+                updateAverageRating();
+
+            },
+
+            function (
+                error
+            ) {
+
+                console.error(
+                    "Gagal mengambil review:",
+                    error
+                );
+
+
+                const reviewList =
+                    document.getElementById(
+                        "reviewList"
+                    );
+
+
+                if (
+                    reviewList
+                ) {
+
+                    reviewList.innerHTML =
+                    `
+                        <div class="review-card">
+
+                            <p>
+                                Ulasan belum dapat dimuat.
+                                Silakan refresh halaman.
+                            </p>
+
+                        </div>
+                    `;
+
+                }
+
+            }
+
+        );
+
+}
+
+
+
+// ========================================
+// TAMPILKAN REVIEW
 // ========================================
 
 function displayReviews() {
 
     const reviewList =
-        document
-            .getElementById(
-                "reviewList"
-            );
+        document.getElementById(
+            "reviewList"
+        );
+
+
+    if (
+        !reviewList
+    ) {
+
+        return;
+
+    }
 
 
     reviewList.innerHTML =
@@ -729,25 +1066,24 @@ function displayReviews() {
 
 
     if (
-        reviews.length === 0
+        publicReviews.length === 0
     ) {
 
         reviewList.innerHTML =
         `
+
             <div class="review-card">
 
                 <p>
                     Belum ada ulasan.
                     Jadilah orang pertama
                     yang memberikan ulasan
-                    untuk website ini 💜
+                    untuk Winne Accounting 💜
                 </p>
 
             </div>
+
         `;
-
-
-        updateAverageRating();
 
 
         return;
@@ -755,24 +1091,21 @@ function displayReviews() {
     }
 
 
-    reviews.forEach(
+    publicReviews.forEach(
 
         function (
             review
         ) {
 
             const reviewCard =
-                document
-                    .createElement(
-                        "div"
-                    );
-
-
-            reviewCard
-                .classList
-                .add(
-                    "review-card"
+                document.createElement(
+                    "div"
                 );
+
+
+            reviewCard.classList.add(
+                "review-card"
+            );
 
 
             const reviewStars =
@@ -790,6 +1123,12 @@ function displayReviews() {
                     );
 
 
+            const reviewDate =
+                formatReviewDate(
+                    review.createdAt
+                );
+
+
             reviewCard.innerHTML =
             `
 
@@ -804,77 +1143,144 @@ function displayReviews() {
                         </h4>
 
                         <span class="review-date">
-                            ${review.date}
+
+                            ${reviewDate}
+
                         </span>
 
                     </div>
 
 
                     <div class="review-stars">
+
                         ${reviewStars}
+
                     </div>
 
                 </div>
 
 
                 <p>
+
                     ${escapeHTML(
                         review.message
                     )}
+
                 </p>
 
             `;
 
 
-            reviewList
-                .appendChild(
-                    reviewCard
-                );
+            reviewList.appendChild(
+                reviewCard
+            );
 
         }
 
     );
-
-
-    updateAverageRating();
 
 }
 
 
 
 // ========================================
-// RATA-RATA RATING
+// FORMAT TANGGAL FIREBASE
+// ========================================
+
+function formatReviewDate(
+    timestamp
+) {
+
+    if (
+        !timestamp
+    ) {
+
+        return "Baru saja";
+
+    }
+
+
+    try {
+
+        const date =
+            timestamp.toDate();
+
+
+        return date
+            .toLocaleDateString(
+
+                "id-ID",
+
+                {
+
+                    day:
+                        "numeric",
+
+                    month:
+                        "long",
+
+                    year:
+                        "numeric"
+
+                }
+
+            );
+
+    }
+
+    catch (
+        error
+    ) {
+
+        return "Baru saja";
+
+    }
+
+}
+
+
+
+// ========================================
+// HITUNG RATA-RATA RATING
 // ========================================
 
 function updateAverageRating() {
 
     const averageRating =
-        document
-            .getElementById(
-                "averageRating"
-            );
+        document.getElementById(
+            "averageRating"
+        );
 
 
     const reviewCount =
-        document
-            .getElementById(
-                "reviewCount"
-            );
+        document.getElementById(
+            "reviewCount"
+        );
 
 
     const summaryStars =
-        document
-            .getElementById(
-                "summaryStars"
-            );
-
-
-    reviewCount.innerText =
-        reviews.length;
+        document.getElementById(
+            "summaryStars"
+        );
 
 
     if (
-        reviews.length === 0
+        !averageRating ||
+        !reviewCount ||
+        !summaryStars
+    ) {
+
+        return;
+
+    }
+
+
+    reviewCount.innerText =
+        publicReviews.length;
+
+
+    if (
+        publicReviews.length === 0
     ) {
 
         averageRating.innerText =
@@ -891,7 +1297,7 @@ function updateAverageRating() {
 
 
     const totalRating =
-        reviews.reduce(
+        publicReviews.reduce(
 
             function (
                 total,
@@ -900,7 +1306,9 @@ function updateAverageRating() {
 
                 return (
                     total +
-                    review.rating
+                    Number(
+                        review.rating
+                    )
                 );
 
             },
@@ -912,14 +1320,13 @@ function updateAverageRating() {
 
     const average =
         totalRating /
-        reviews.length;
+        publicReviews.length;
 
 
     averageRating.innerText =
-        average
-            .toFixed(
-                1
-            );
+        average.toFixed(
+            1
+        );
 
 
     const roundedRating =
@@ -956,10 +1363,9 @@ function escapeHTML(
 ) {
 
     const element =
-        document
-            .createElement(
-                "div"
-            );
+        document.createElement(
+            "div"
+        );
 
 
     element.textContent =
@@ -1012,7 +1418,7 @@ window.addEventListener(
 
 
 // ========================================
-// TAMPILKAN REVIEW SAAT WEB DIBUKA
+// MULAI MENDENGARKAN REVIEW FIREBASE
 // ========================================
 
-displayReviews();
+listenToReviews();
